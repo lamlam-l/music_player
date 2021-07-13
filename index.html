@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./assets/css/style.css">
+    <title>Music Player</title>
+</head>
+
+<body>
+    <div class="player">
+        <div class="dashboard">
+            <header>
+                <p>Now playing</p>
+                <h1 class="music-name">Music name</h1>
+            </header>
+            <div class="cd">
+                <div class="cd-thumb"></div>
+            </div>
+            <div class="control">
+                <div class="btn btn-repeate"></div>
+                <div class="btn btn-previous"></div>
+                <div class="btn btn-play"></div>
+                <div class="btn btn-next"></div>
+                <div class="btn btn-random"></div>
+            </div>
+            <progress value="32" max="100" ></progress>
+            <audio id="audio" src=""></audio>
+        </div>
+        <div class="playlist">
+            <div class="song">
+                <div class="thumb"></div>
+                <div class="content">
+                    <h2 class="music-name">Music name</h2>
+                    <p class="singer">singer</p>
+                </div>
+                <div class="option"></div>
+            </div>
+        </div>
+    </div>
+    <script src="https://kit.fontawesome.com/b0bc42f674.js" crossorigin="anonymous"></script>
+</body>
+
+</html>
