@@ -1,6 +1,7 @@
 const player = document.getElementsByClassName("player")[0]
 const playlist = player.getElementsByClassName("playlist")[0]
 const dashboard = player.getElementsByClassName("dashboard")[0]
+var currentSong
 
 const app = {
     songs: [
@@ -90,7 +91,7 @@ const app = {
         },
     ],
     render: function () {
-        const htmls = this.songs.map(song => `<div class="song">
+        const htmls = this.songs.map((song, id) => `<div class="song" id="${id}">
                 <div class="thumb">
                     <div class="thumb-img" style="background-image: url(${song.image})"></div>
                 </div>
@@ -105,9 +106,6 @@ const app = {
         `)
         playlist.innerHTML = htmls.join("")
     },
-    play(id) {
-
-    },
     handleEvents: function () {
         const cdThumb = dashboard.getElementsByClassName("cd-thumb")[0]
         const currentWidht = cdThumb.offsetWidth
@@ -116,12 +114,49 @@ const app = {
             const scrollTop = window.scrollY || document.documentElement.scrollTop
             var cdThumbWidth = currentWidht - scrollTop
             cdThumb.style.height = (cdThumbWidth > 0 ? cdThumbWidth : 0) + "px"
-            cdThumbOpacity.style = `background-color: rgba(255, 255, 255, ${1- cdThumbWidth/currentWidht});`
+            cdThumbOpacity.style = `background-color: rgba(255, 255, 255, ${1 - cdThumbWidth / currentWidht});`
+        }
+        const songs = Array.from(playlist.getElementsByClassName("song"))
+        songs.map(song => {
+            song.addEventListener("click", () => {
+                this.unplay(currentSong)
+                currentSong = song
+                this.play(currentSong)
+            })
+        })
+    },
+    play(song) {
+        function highlightCurrentSong(song) {
+            song.style["background-color"] = "red"
+            song.getElementsByClassName("music-name")[0].style.color = "white"
+            song.getElementsByClassName("singer")[0].style.color = "white"
+            song.getElementsByTagName("i")[0].style.color = "white"
+            const cdThumb = dashboard.getElementsByClassName("cd-thumb")[0]
+            const musicName = dashboard.getElementsByClassName("music-name")[0]
+            musicName.textContent = songs[song.id].name
+            cdThumb.style = `background-image: url(${songs[song.id].image}); animation: spin 20s linear infinite;`
+            window.scrollTo(0, 0)
+        }
+
+        const songs = this.songs
+        highlightCurrentSong(song)
+        const source = dashboard.getElementsByTagName("source")[0]
+    },
+    unplay(song) {
+        if (typeof song !== "undefined") {
+            function unHightlight(song) {
+                song.style["background-color"] = "white"
+                song.getElementsByClassName("music-name")[0].style.color = "black"
+                song.getElementsByClassName("singer")[0].style.color = "black"
+                song.getElementsByTagName("i")[0].style.color = "black"
+            }
+
+            unHightlight(song)
         }
     },
     start: function () {
-        this.handleEvents()
         this.render()
+        this.handleEvents()
     }
 }
 

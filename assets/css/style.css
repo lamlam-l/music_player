@@ -37,6 +37,7 @@
 .player .dashboard .cd {
     width: 100%;
     height: fit-content;
+    margin-top: 5px;
 }
 
 .player .dashboard .cd .cd-thumb {
@@ -44,8 +45,15 @@
     margin: auto;
     height: 150px;
     border-radius: 100%;
-    background: url(../img/alan_walker.jpg) no-repeat;
+    background-repeat: no-repeat;
     background-size: cover;
+}
+
+@keyframes spin {
+    100% {
+        -webkit-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
 }
 
 .player .dashboard .cd .cd-thumb .opacity {
@@ -97,8 +105,8 @@
 /* playlist */
 
 .player .playlist {
-    padding-top: 295px;
-    /*295*/
+    padding-top: 300px;
+    /*300*/
     padding-bottom: 5px;
     width: 100%;
 }
