@@ -2,7 +2,9 @@ const player = document.getElementsByClassName("player")[0]
 const playlist = player.getElementsByClassName("playlist")[0]
 const dashboard = player.getElementsByClassName("dashboard")[0]
 var currentSong
-
+var pause
+const audio = document.getElementById("audio")
+const audioSource = document.getElementsByTagName("source")[0]
 const app = {
     songs: [
         {
@@ -26,7 +28,7 @@ const app = {
         {
             name: "Nevada",
             singer: "vicetone",
-            path: "./assets/music/nvada.mp3",
+            path: "./assets/music/nevada.mp3",
             image: "./assets/img/vicetone.jpg",
         },
         {
@@ -68,7 +70,7 @@ const app = {
         {
             name: "Nevada",
             singer: "vicetone",
-            path: "./assets/music/nvada.mp3",
+            path: "./assets/music/nevada.mp3",
             image: "./assets/img/vicetone.jpg",
         },
         {
@@ -107,6 +109,7 @@ const app = {
         playlist.innerHTML = htmls.join("")
     },
     handleEvents: function () {
+        //scroll
         const cdThumb = dashboard.getElementsByClassName("cd-thumb")[0]
         const currentWidht = cdThumb.offsetWidth
         var cdThumbOpacity = cdThumb.getElementsByClassName("opacity")[0]
@@ -116,6 +119,7 @@ const app = {
             cdThumb.style.height = (cdThumbWidth > 0 ? cdThumbWidth : 0) + "px"
             cdThumbOpacity.style = `background-color: rgba(255, 255, 255, ${1 - cdThumbWidth / currentWidht});`
         }
+        //chuyển bài
         const songs = Array.from(playlist.getElementsByClassName("song"))
         songs.map(song => {
             song.addEventListener("click", () => {
@@ -124,23 +128,43 @@ const app = {
                 this.play(currentSong)
             })
         })
+        //play/pause button
+        const playBtn = dashboard.getElementsByClassName("btn-play")[0]
+        playBtn.addEventListener("click", () => {
+            if (pause) {
+                this.playAudio()
+                pause = false
+                dashboard.getElementsByClassName("cd-thumb")[0].style.animation = "spin 20s linear infinite"
+                dashboard.getElementsByTagName("p")[0].textContent = " playing"
+                dashboard.querySelector(".player .dashboard .control .btn-play i").classList = ["fas fa-pause"]
+            } else {
+                this.pauseAudio()
+                pause = true
+                dashboard.getElementsByClassName("cd-thumb")[0].style.animation = ""
+                dashboard.getElementsByTagName("p")[0].textContent = "pause"
+                dashboard.querySelector(".player .dashboard .control .btn-play i").classList = ["fas fa-play"]
+            }
+        })
     },
+
     play(song) {
         function highlightCurrentSong(song) {
             song.style["background-color"] = "red"
             song.getElementsByClassName("music-name")[0].style.color = "white"
             song.getElementsByClassName("singer")[0].style.color = "white"
             song.getElementsByTagName("i")[0].style.color = "white"
-            const cdThumb = dashboard.getElementsByClassName("cd-thumb")[0]
-            const musicName = dashboard.getElementsByClassName("music-name")[0]
-            musicName.textContent = songs[song.id].name
-            cdThumb.style = `background-image: url(${songs[song.id].image}); animation: spin 20s linear infinite;`
+            dashboard.getElementsByTagName("p")[0].textContent = "now playing"
+            dashboard.getElementsByClassName("cd-thumb")[0].style = `background-image: url(${songs[song.id].image}); animation: spin 20s linear infinite;`
+            dashboard.querySelector(".player .dashboard .control .btn-play i").classList = ["fas fa-pause"]
+            dashboard.getElementsByClassName("music-name")[0].textContent = songs[song.id].name
             window.scrollTo(0, 0)
         }
-
         const songs = this.songs
+        pause = false
+        audioSource.src = songs[song.id].path
+        audio.load()
         highlightCurrentSong(song)
-        const source = dashboard.getElementsByTagName("source")[0]
+        this.playAudio()
     },
     unplay(song) {
         if (typeof song !== "undefined") {
@@ -150,9 +174,18 @@ const app = {
                 song.getElementsByClassName("singer")[0].style.color = "black"
                 song.getElementsByTagName("i")[0].style.color = "black"
             }
-
             unHightlight(song)
+            this.pauseAudio()
         }
+    },
+    playAudio() {
+        audio.play().then(() => {
+        }).catch(err => {
+            console.log(err);
+        })
+    },
+    pauseAudio() {
+        audio.pause()
     },
     start: function () {
         this.render()
