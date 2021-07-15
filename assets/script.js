@@ -5,7 +5,15 @@ var currentSong
 var pause
 const audio = document.getElementById("audio")
 const audioSource = document.getElementsByTagName("source")[0]
-
+const cdThumb = dashboard.getElementsByClassName("cd-thumb")[0]
+const cdThumbAnimate = cdThumb.animate([
+    { transform: "rotate(360deg)" }
+], {
+    duration: 20000,
+    // easing: linear,
+    iterations: Infinity,
+})
+cdThumbAnimate.pause()
 const app = {
 
     songs: [
@@ -99,15 +107,6 @@ const app = {
         status(message) {
             dashboard.getElementsByTagName("p")[0].textContent = message
         },
-        roateThumbail() {
-            // const cdThumb = dashboard.getElementsByClassName("cd-thumb")[0]
-            // const cdThumbAnimate = cdThumb.animate
-            // console.log(cdThumbAnimate);
-            dashboard.getElementsByClassName("cd-thumb")[0].style.animation = "spin 20s linear infinite"
-        },
-        stopThumbail() {
-            dashboard.getElementsByClassName("cd-thumb")[0].style.animation = ""
-        },
         nextSong(app) {
             if (currentSong !== "undefined") {
                 if (currentSong.id == app.songs.length - 1) {
@@ -179,13 +178,13 @@ const app = {
             if (pause) {
                 this.playAudio()
                 pause = false
-                this.action.roateThumbail()
+                cdThumbAnimate.play()
                 this.action.status("playing")
                 dashboard.querySelector(".player .dashboard .control .btn-play i").classList = ["fas fa-pause"]
             } else {
                 this.pauseAudio()
                 pause = true
-                this.action.stopThumbail()
+                cdThumbAnimate.pause()
                 this.action.status("pause")
                 dashboard.querySelector(".player .dashboard .control .btn-play i").classList = ["fas fa-play"]
             }
@@ -263,7 +262,7 @@ const app = {
             //change dashboard
             _this.action.status("now playing")
             dashboard.getElementsByClassName("cd-thumb")[0].style = `background-image: url(${songs[song.id].image});`
-            _this.action.roateThumbail()
+            cdThumbAnimate.play()
             dashboard.querySelector(".player .dashboard .control .btn-play i").classList = ["fas fa-pause"]
             dashboard.getElementsByClassName("music-name")[0].textContent = songs[song.id].name
         }

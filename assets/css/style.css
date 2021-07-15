@@ -53,13 +53,6 @@
     background-size: cover;
 }
 
-@keyframes spin {
-    100% {
-        -webkit-transform: rotate(360deg);
-        transform: rotate(360deg);
-    }
-}
-
 .player .dashboard .cd .cd-thumb .opacity {
     width: 100%;
     height: 100%;
