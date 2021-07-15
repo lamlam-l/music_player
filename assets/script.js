@@ -5,6 +5,7 @@ var currentSong
 var pause
 const audio = document.getElementById("audio")
 const audioSource = document.getElementsByTagName("source")[0]
+
 const app = {
 
     songs: [
@@ -99,10 +100,39 @@ const app = {
             dashboard.getElementsByTagName("p")[0].textContent = message
         },
         roateThumbail() {
+            // const cdThumb = dashboard.getElementsByClassName("cd-thumb")[0]
+            // const cdThumbAnimate = cdThumb.animate
+            // console.log(cdThumbAnimate);
             dashboard.getElementsByClassName("cd-thumb")[0].style.animation = "spin 20s linear infinite"
         },
         stopThumbail() {
             dashboard.getElementsByClassName("cd-thumb")[0].style.animation = ""
+        },
+        nextSong(app) {
+            if (currentSong !== "undefined") {
+                if (currentSong.id == app.songs.length - 1) {
+                    app.unplay(currentSong)
+                    currentSong = document.getElementById(0)
+                    app.play(currentSong)
+                } else {
+                    app.unplay(currentSong)
+                    currentSong = document.getElementById(parseInt(currentSong.id) + 1)
+                    app.play(currentSong)
+                }
+            }
+        },
+        previousSong(app) {
+            if (currentSong !== "undefined") {
+                if (currentSong.id == 0) {
+                    app.unplay(currentSong)
+                    currentSong = document.getElementById(app.songs.length - 1)
+                    app.play(currentSong)
+                } else {
+                    app.unplay(currentSong)
+                    currentSong = document.getElementById(parseInt(currentSong.id) - 1)
+                    app.play(currentSong)
+                }
+            }
         }
     },
 
@@ -137,7 +167,7 @@ const app = {
         //chuyển bài
         const songs = Array.from(playlist.getElementsByClassName("song"))
         songs.map(song => {
-            song.addEventListener("click", () => {
+            song.addEventListener("click", (e) => {
                 this.unplay(currentSong)
                 currentSong = song
                 this.play(currentSong)
@@ -163,22 +193,61 @@ const app = {
         //next, previous
         const previousBtn = dashboard.getElementsByClassName("btn-previous")[0]
         previousBtn.addEventListener("click", () => {
-            if (typeof currentSong !== "undefined" && currentSong.id > 0) {
-                this.unplay(currentSong)
-                currentSong = document.getElementById(currentSong.id - 1)
-                this.play(currentSong)
-                console.log(currentSong.id - 1)
-            }
+            this.action.previousSong(this)
         })
         const nextBtn = dashboard.getElementsByClassName("btn-next")[0]
         nextBtn.addEventListener("click", () => {
-            if (typeof currentSong !== "undefined" && currentSong.id != this.songs.length) {
-                // this.unplay(currentSong)
-                // currentSong = document.getElementById(currentSong.id + 1)
-                // this.play(currentSong)
-                console.log(currentSong.id + 1)
+            this.action.nextSong(this)
+        })
+        //progress bar
+        const progress = dashboard.getElementsByClassName("progress")[0]
+        isTimeUpdate = true
+        audio.ontimeupdate = () => {
+            if (audio.duration && isTimeUpdate) {
+                var progressPercent = Math.floor(100 * audio.currentTime / audio.duration)
+                progress.value = progressPercent
+            }
+        }
+        //progress bar change
+        progress.onmousedown = (e) => {
+            isTimeUpdate = false
+        }
+        progress.ontouchstart = (e) => {
+            isTimeUpdate = false
+        }
+        progress.addEventListener("change", (e) => {
+            var currentTime = Math.floor(e.target.value * audio.duration / 100)
+            audio.currentTime = currentTime
+            isTimeUpdate = true
+        })
+        //repeat button
+        const repeatBtn = dashboard.getElementsByClassName("btn-repeate")[0]
+        var repeat = false
+        audio.onended = () => {
+            this.action.nextSong(this)
+        }
+        repeatBtn.addEventListener("click", (e) => {
+            if (repeat) {
+                repeatBtn.children[0].style.color = "black"
+                this.action.status("repeat mode off")
+                audio.onended = () => {
+                    this.action.nextSong(this)
+                }
+                repeat = false
+            } else {
+                repeatBtn.children[0].style.color = "rgb(255, 62, 62)"
+                this.action.status("repeat mode on")
+                audio.onended = () => {
+                    this.play(currentSong)
+                }
+                repeat = true
             }
         })
+        //random button
+        const randomBtn = dashboard.getElementsByClassName("btn-random")[0]
+        randomBtn.onclick = (e) => {
+
+        }
     },
 
     play(song) {
@@ -188,13 +257,15 @@ const app = {
             song.getElementsByClassName("music-name")[0].style.color = "white"
             song.getElementsByClassName("singer")[0].style.color = "white"
             song.getElementsByTagName("i")[0].style.color = "white"
+            const scrollTop = window.scrollY || document.documentElement.scrollTop
+            window.scrollTo(0, 0)
+            window.scrollTo(0, scrollTop)
             //change dashboard
             _this.action.status("now playing")
             dashboard.getElementsByClassName("cd-thumb")[0].style = `background-image: url(${songs[song.id].image});`
             _this.action.roateThumbail()
             dashboard.querySelector(".player .dashboard .control .btn-play i").classList = ["fas fa-pause"]
             dashboard.getElementsByClassName("music-name")[0].textContent = songs[song.id].name
-            window.scrollTo(0, 0)
         }
         const _this = this
         const songs = this.songs
