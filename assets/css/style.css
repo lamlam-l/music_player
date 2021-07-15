@@ -102,15 +102,13 @@
     border-radius: 0;
 }
 
-.player .dashboard audio {}
-
 /* ____________ */
 
 /* playlist */
 
 .player .playlist {
-    padding-top: 300px;
-    /*300*/
+    padding-top: 292px;
+    /*295*/
     padding-bottom: 5px;
     width: 100%;
 }

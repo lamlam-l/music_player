@@ -6,6 +6,7 @@ var pause
 const audio = document.getElementById("audio")
 const audioSource = document.getElementsByTagName("source")[0]
 const app = {
+
     songs: [
         {
             name: "Unity",
@@ -92,7 +93,20 @@ const app = {
             image: "./assets/img/murad.jpg",
         },
     ],
-    render: function () {
+
+    action: {
+        status(message) {
+            dashboard.getElementsByTagName("p")[0].textContent = message
+        },
+        roateThumbail() {
+            dashboard.getElementsByClassName("cd-thumb")[0].style.animation = "spin 20s linear infinite"
+        },
+        stopThumbail() {
+            dashboard.getElementsByClassName("cd-thumb")[0].style.animation = ""
+        }
+    },
+
+    render() {
         const htmls = this.songs.map((song, id) => `<div class="song" id="${id}">
                 <div class="thumb">
                     <div class="thumb-img" style="background-image: url(${song.image})"></div>
@@ -108,7 +122,8 @@ const app = {
         `)
         playlist.innerHTML = htmls.join("")
     },
-    handleEvents: function () {
+
+    handleEvents() {
         //scroll
         const cdThumb = dashboard.getElementsByClassName("cd-thumb")[0]
         const currentWidht = cdThumb.offsetWidth
@@ -134,38 +149,62 @@ const app = {
             if (pause) {
                 this.playAudio()
                 pause = false
-                dashboard.getElementsByClassName("cd-thumb")[0].style.animation = "spin 20s linear infinite"
-                dashboard.getElementsByTagName("p")[0].textContent = " playing"
+                this.action.roateThumbail()
+                this.action.status("playing")
                 dashboard.querySelector(".player .dashboard .control .btn-play i").classList = ["fas fa-pause"]
             } else {
                 this.pauseAudio()
                 pause = true
-                dashboard.getElementsByClassName("cd-thumb")[0].style.animation = ""
-                dashboard.getElementsByTagName("p")[0].textContent = "pause"
+                this.action.stopThumbail()
+                this.action.status("pause")
                 dashboard.querySelector(".player .dashboard .control .btn-play i").classList = ["fas fa-play"]
+            }
+        })
+        //next, previous
+        const previousBtn = dashboard.getElementsByClassName("btn-previous")[0]
+        previousBtn.addEventListener("click", () => {
+            if (typeof currentSong !== "undefined" && currentSong.id > 0) {
+                this.unplay(currentSong)
+                currentSong = document.getElementById(currentSong.id - 1)
+                this.play(currentSong)
+                console.log(currentSong.id - 1)
+            }
+        })
+        const nextBtn = dashboard.getElementsByClassName("btn-next")[0]
+        nextBtn.addEventListener("click", () => {
+            if (typeof currentSong !== "undefined" && currentSong.id != this.songs.length) {
+                // this.unplay(currentSong)
+                // currentSong = document.getElementById(currentSong.id + 1)
+                // this.play(currentSong)
+                console.log(currentSong.id + 1)
             }
         })
     },
 
     play(song) {
         function highlightCurrentSong(song) {
+            //highlight in playlist
             song.style["background-color"] = "red"
             song.getElementsByClassName("music-name")[0].style.color = "white"
             song.getElementsByClassName("singer")[0].style.color = "white"
             song.getElementsByTagName("i")[0].style.color = "white"
-            dashboard.getElementsByTagName("p")[0].textContent = "now playing"
-            dashboard.getElementsByClassName("cd-thumb")[0].style = `background-image: url(${songs[song.id].image}); animation: spin 20s linear infinite;`
+            //change dashboard
+            _this.action.status("now playing")
+            dashboard.getElementsByClassName("cd-thumb")[0].style = `background-image: url(${songs[song.id].image});`
+            _this.action.roateThumbail()
             dashboard.querySelector(".player .dashboard .control .btn-play i").classList = ["fas fa-pause"]
             dashboard.getElementsByClassName("music-name")[0].textContent = songs[song.id].name
             window.scrollTo(0, 0)
         }
+        const _this = this
         const songs = this.songs
         pause = false
+        highlightCurrentSong(song)
         audioSource.src = songs[song.id].path
         audio.load()
-        highlightCurrentSong(song)
         this.playAudio()
     },
+
     unplay(song) {
         if (typeof song !== "undefined") {
             function unHightlight(song) {
@@ -178,19 +217,23 @@ const app = {
             this.pauseAudio()
         }
     },
+
     playAudio() {
         audio.play().then(() => {
         }).catch(err => {
             console.log(err);
         })
     },
+
     pauseAudio() {
         audio.pause()
     },
+
     start: function () {
         this.render()
         this.handleEvents()
     }
+
 }
 
 app.start()
