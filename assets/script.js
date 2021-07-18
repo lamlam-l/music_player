@@ -245,7 +245,10 @@ const app = {
         //random button
         const randomBtn = dashboard.getElementsByClassName("btn-random")[0]
         randomBtn.onclick = (e) => {
-
+            var randomNumber = Math.floor(Math.random()*this.songs.length)
+            this.unplay(currentSong)
+            currentSong = document.getElementById(randomNumber)
+            this.play(currentSong)
         }
     },
 
